@@ -24,7 +24,7 @@ if __name__ == '__main__':
     F = data['F']
     k = data['k']
 
-    C = [] # TODO: make this optional
+    #C = [] # TODO: make this optional
     F[:] = 0
 
     K = truss_simulation.construct_K(X, E, k)

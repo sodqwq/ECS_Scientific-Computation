@@ -21,8 +21,6 @@ def right_multiply_Q(B, v_list):
     
     return B
     
-
-    
     
 
 def qr_iteration(A, Q_accum):
@@ -67,31 +65,7 @@ def pure_qr(A, Q_accum, tol=1e-8, maxIterations=1000):
 def full_qr(A, Q_accum, tol=1e-8):
     # TODO (Problem 3): Implement the QR algorithm with the Rayleigh quotient shift and deflation.
     # Also record the residuals at each step in `residuals` like done in `pure_qr` above.
-    '''residuals = []
-    m, n = A.shape
-    for i in range(m - 1):
-        # Check for convergence and perform deflation if needed
-        if np.abs(A[-1, -2]) < tol:
-            # Deflate A and continue with the smaller matrix
-            A = A[:-1, :-1]
-            continue
-        # Compute the Rayleigh quotient shift
-        mu = A[-1, -1]
-        # Shift A
-        A -= mu * np.identity(n)
-        # Perform QR iteration
-        qr_iteration(A, Q_accum)
-        # Unshift A
-        A += mu * np.identity(n)
-        # Compute the residual (off-diagonal size)
-        odiag = off_diag_size(A)
-        residuals.append(odiag)
-
-        # Check for convergence
-        if odiag < tol:
-            break
     
-    '''
     n = A.shape[0]
     residuals = []
     
@@ -110,8 +84,28 @@ def full_qr(A, Q_accum, tol=1e-8):
         I_pad = np.eye(n - m_deflated)
         Q_accum = np.dot(Q_accum, np.block([[np.eye(m_deflated), np.zeros((m_deflated, n - m_deflated))],
                                             [np.zeros((n - m_deflated, m_deflated)), I_pad]]))
+    '''
+    residuals = []
+    m = A.shape[0]  # Assume A is square and m x m
+    while m > 1:
+        # Check for convergence of the last row
+        if off_diag_size(A[:m, :m]) < tol:
+            m -= 1
+            continue
 
-    
+        # Apply the Rayleigh quotient shift
+        mu = A[m-1, m-1]  # Rayleigh quotient
+        A[:m, :m] -= mu * np.eye(m)
+
+        # QR iteration without the shift
+        Q_accum[:m] = qr_iteration(A[:m, :m], Q_accum[:m])
+
+        # Reapply the shift
+        A[:m, :m] += mu * np.eye(m)
+
+        # Record the off-diagonal norm as the residual
+        residuals.append(off_diag_size(A[:m, :m]))
+    '''
     return residuals
 
 def sorted_eigendecomposition(A, tol=1e-8, descending=True):

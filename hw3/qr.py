@@ -32,19 +32,19 @@ def householder(A):
     """
     m, n = A.shape
     if (m < n): raise ValueError("A must have at least as many rows as columns")
-    # TODO (Problem 11): Implement the Householder algorithm
-    # https://julianpanetta.com/teaching/ECS130/10-QR-part2-deck.html#/householder-qr-algorithm/9
     Q = []
     R = A.copy()
-    # follow Algorithm
     for k in range(n):
         x = R[k:m, k]
-        e1 = np.zeros_like(x)
-        e1[0] = 1
-        v_k = x + np.sign(x[0]) * np.linalg.norm(x) * e1
-        v_k = v_k /norm(v_k)
+        v_k = x.copy()
+        # We need to define sign(0) = 1 (different from np.sign);
+        # otherwise the diagonal of the R factor can remain zero.
+        s = np.sign(x[0])
+        if (s == 0) : s = 1
+        v_k[0] += s * norm(x)
+        v_k = v_k / norm(v_k)
+        R[k:m, k:n] -= 2 * np.outer(v_k, R[k:m, k:n].T @ v_k)
         Q.append(v_k)
-        R[k:m,k:n] -= 2 * np.outer(v_k,np.dot(v_k,R[k:m, k:n]))
     return Q,R
 
 

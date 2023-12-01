@@ -9,46 +9,21 @@ def right_multiply_Q(B, v_list):
     `Q` is represented implicitly by the list of Householder vectors `v_list`.
     """
     # TODO (Problem 2a): apply each Householder reflector in `v_list` to each *row* of `B`
-    '''for v in v_list:
-        # Ensure v is a column vector and has the same number of elements as the columns in B
-        if len(v) != B.shape[1]:
-            raise ValueError("Dimension of v does not match the number of columns in B")
-        
-        v = np.array(v).reshape(-1, 1)
-        
-        # Apply the Householder reflector to each row of B
-        for i in range(B.shape[0]):
-            B[i, :] -= 2 * np.dot(v.T, B[i, :]) * v.flatten()
+    """y = B.T
+    for k in range(len(v_list)):
+        y[k:] -= 2 * np.outer(v_list[k],v_list[k] @ y[k:])
+    B[:] = y.T"""
     
-    for v in v_list:
-    # Compute the Householder transformation
-    #v = np.array(v).reshape(-1，1) # Ensure v is a column vector
-        H = np.eye(B.shape[1]) - 2 * np.dot(v,v.T) / np.dot(v.T, v)
-        B = np.dot(B,H)
-    
-    for v in v_list:
-    # Compute the Householder transformation
-    #v = np.array(v).reshape(-1，1) # Ensure v is a column vector
-        H = np.eye(B.shape[1]) - 2 * np.dot(v,v.T) / np.dot(v.T, v)
-        B = np.dot(B,H)'''
-    '''for v in v_list:
-        for i in range(len(B)):B[i] = qr.apply_householder(v,B[i])
-    Q,R = qr.householder(B)
-    y= B.T
-    m,n = y.shape
-    for V in v_list:
-        for k in range(n):
-            v_k=V
-            y[k:] -= (2 * np.dot(v_k,y[k:])) * V
-    B=y.T
-    '''
-    for v in v_list:
-        v = np.array(v)  # Ensure v is a numpy array
-        for k in range(B.shape[0]):
-            # Apply reflector to the k-th column of B (which is B^T's row)
-            B[k, :] -= 2 * np.dot(v, B[k, :]) * v
+    for i in range(B.shape[0]):
+        for k in range(len(v_list)):
+            v = v_list[k]
+            B[i,k:] -= 2 *v * np.dot(v,B[i,k:])
     
     return B
+    
+
+    
+    
 
 def qr_iteration(A, Q_accum):
     """
@@ -56,14 +31,7 @@ def qr_iteration(A, Q_accum):
     matrix `A`, accumulating the iteration's Q factor to `Q_accum`
     """
     # TODO (Problem 2b): update A and Q_accum in-place!
-    
-    """Q,R = qr.householder(A)
-    A[:] = right_multiply_Q(R, Q)
-    Q_accum[:] =  right_multiply_Q(Q_accum, Q)
-    
-    Q, R = np.linalg.qr(A)   # Perform QR decomposition
-    A[:] = np.dot(R, Q)      # Update A as RQ
-    Q_accum[:] = np.dot(Q_accum, Q)  # Update Q_accum"""
+ 
     Q,R = qr.householder(A)
     A[:] = right_multiply_Q(R, Q)
     Q_accum[:] =  right_multiply_Q(Q_accum, Q)

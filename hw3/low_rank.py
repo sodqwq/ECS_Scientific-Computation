@@ -1,7 +1,7 @@
 # ECS130 HW3 -- Image Compression via Low-Rank Approximation
 import sys
 from matplotlib import pyplot as plt
-import svd as sv
+import svd as svd
 import numpy as np
 
 # Parse command line arguments.
@@ -16,7 +16,7 @@ args = parser.parse_args()
 img = np.array(plt.imread(args.input), dtype=np.float64)
 
 # Compute the SVD.
-U, sigma, V = sv.svd(img)
+U, sigma, V = svd.svd(img)
 
 # Truncate the SVD matrices to the given rank.
 r = args.rank

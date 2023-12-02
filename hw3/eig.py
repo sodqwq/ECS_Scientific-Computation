@@ -74,13 +74,14 @@ def full_qr(A, Q_accum, tol=1e-8):
         while norm(A_deflated[:(m_deflated - 1), m_deflated - 1]) > tol:
             mu = A_deflated[m_deflated-1 , m_deflated-1 ]
             np.fill_diagonal(A_deflated,A_deflated.diagonal() - mu)
+
             qr_iteration(A_deflated,Q_accum[ : ,:m_deflated])
+            
             np.fill_diagonal(A_deflated,A_deflated.diagonal() + mu)
             residuals.append(off_diag_size(A))
 
     return residuals
 
-    return residuals
 
 def sorted_eigendecomposition(A, tol=1e-8, descending=True):
     """

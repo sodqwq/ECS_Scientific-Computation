@@ -5,17 +5,17 @@ def svd(A, tol=1e-8, maxIterations=1000):
     """
     Construct the SVD of a potentially rectangular matrix A.
     """
-    m, n = A.shape
+    m,n = A.shape
     k = min(m, n)
-    U, sigma, V = np.eye(m, k), np.zeros(k), np.eye(n, k) # TODO: Replace these with the actual SVD.
+    U, sigma, V = np.eye(m, k), np.zeros(k), np.eye(n, k) 
+    # TODO: Replace these with the actual SVD.
     # TODO (Problem 5): compute the "thin" SVD of A by performing an eigenvalue decomposition
     # of either A^T A or A A^T depending on the shape of A.
     if m > n:
-        # Eigenvalue decomposition of A^T A
         eigvals, eigvecs = np.linalg.eigh(A.T @ A)
     else:
-        # Eigenvalue decomposition of A A^T
         eigvals, eigvecs = np.linalg.eigh(A @ A.T)
+        
     # Sort eigenvalues and corresponding eigenvectors
     idx = eigvals.argsort()[::-1]   
     eigvals = eigvals[idx]
@@ -34,8 +34,10 @@ def svd(A, tol=1e-8, maxIterations=1000):
         U = eigvecs[:, :r]
         V = A.T @ U @ np.diag(1/sigma)
 
-    # Truncate matrices based on the rank r
-    U, sigma, V = U[:, :r], sigma[:r], V[:, :r]
+    sigma = sigma[:r]
+    U = U[:, :r]
+    V = V[:, :r]
+
     return U, sigma, V
 
 def relerror(a, b):

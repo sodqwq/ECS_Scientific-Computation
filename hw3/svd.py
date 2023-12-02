@@ -10,7 +10,32 @@ def svd(A, tol=1e-8, maxIterations=1000):
     U, sigma, V = np.eye(m, k), np.zeros(k), np.eye(n, k) # TODO: Replace these with the actual SVD.
     # TODO (Problem 5): compute the "thin" SVD of A by performing an eigenvalue decomposition
     # of either A^T A or A A^T depending on the shape of A.
+    if m > n:
+        # Eigenvalue decomposition of A^T A
+        eigvals, eigvecs = np.linalg.eigh(A.T @ A)
+    else:
+        # Eigenvalue decomposition of A A^T
+        eigvals, eigvecs = np.linalg.eigh(A @ A.T)
+    # Sort eigenvalues and corresponding eigenvectors
+    idx = eigvals.argsort()[::-1]   
+    eigvals = eigvals[idx]
+    eigvecs = eigvecs[:,idx]
+    # Compute Sigma
+    sigma = np.sqrt(np.maximum(eigvals, 0))
+    r = np.sum(sigma > tol)
+    sigma = sigma[:r]
 
+    if m > n:
+        # Compute U and V for A^T A
+        V = eigvecs[:, :r]
+        U = A @ V @ np.diag(1/sigma)
+    else:
+        # Compute U and V for A A^T
+        U = eigvecs[:, :r]
+        V = A.T @ U @ np.diag(1/sigma)
+
+    # Truncate matrices based on the rank r
+    U, sigma, V = U[:, :r], sigma[:r], V[:, :r]
     return U, sigma, V
 
 def relerror(a, b):

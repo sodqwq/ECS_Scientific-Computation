@@ -66,46 +66,20 @@ def full_qr(A, Q_accum, tol=1e-8):
     # TODO (Problem 3): Implement the QR algorithm with the Rayleigh quotient shift and deflation.
     # Also record the residuals at each step in `residuals` like done in `pure_qr` above.
     
-    n = A.shape[0]
+    m = A.shape[0]
     residuals = []
-    
-    for m_deflated in range(n, 1, -1):
-        A_deflated = A[:m_deflated, :m_deflated]  # View of the top-left block
 
-        # Run Rayleigh-quotient-shifted QR iteration on the submatrix A_deflated
-        while np.max(np.abs(np.tril(A_deflated, -1))) > tol:
-            mu = A_deflated[-1, -1]  # Get the Rayleigh quotient
-            np.fill_diagonal(A_deflated, np.diagonal(A_deflated) - mu)  # Apply the shift
-            qr_iteration(A_deflated, Q_accum[:, :m_deflated])
-            np.fill_diagonal(A_deflated, np.diagonal(A_deflated) + mu)  # Undo the shift
-            residuals.append(off_diag_size(A_deflated))
+    for m_deflated in range(m,1,-1):
+        A_deflated = A[:m_deflated, :m_deflated]
+        while norm(A_deflated[:(m_deflated - 1), m_deflated - 1]) > tol:
+            mu = A_deflated[m_deflated-1 , m_deflated-1 ]
+            np.fill_diagonal(A_deflated,A_deflated.diagonal() - mu)
+            qr_iteration(A_deflated,Q_accum[ : ,:m_deflated])
+            np.fill_diagonal(A_deflated,A_deflated.diagonal() + mu)
+            residuals.append(off_diag_size(A))
 
-        # Padding Q_accum with identity matrix for the deflated portion
-        I_pad = np.eye(n - m_deflated)
-        Q_accum = np.dot(Q_accum, np.block([[np.eye(m_deflated), np.zeros((m_deflated, n - m_deflated))],
-                                            [np.zeros((n - m_deflated, m_deflated)), I_pad]]))
-    '''
-    residuals = []
-    m = A.shape[0]  # Assume A is square and m x m
-    while m > 1:
-        # Check for convergence of the last row
-        if off_diag_size(A[:m, :m]) < tol:
-            m -= 1
-            continue
+    return residuals
 
-        # Apply the Rayleigh quotient shift
-        mu = A[m-1, m-1]  # Rayleigh quotient
-        A[:m, :m] -= mu * np.eye(m)
-
-        # QR iteration without the shift
-        Q_accum[:m] = qr_iteration(A[:m, :m], Q_accum[:m])
-
-        # Reapply the shift
-        A[:m, :m] += mu * np.eye(m)
-
-        # Record the off-diagonal norm as the residual
-        residuals.append(off_diag_size(A[:m, :m]))
-    '''
     return residuals
 
 def sorted_eigendecomposition(A, tol=1e-8, descending=True):

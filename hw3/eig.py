@@ -12,7 +12,8 @@ def right_multiply_Q(B, v_list):
     for i in range(B.shape[0]):
         for k in range(len(v_list)):
             v = v_list[k]
-            B[i,k:] -= 2 *v * np.dot(v,B[i,k:])
+            projection = np.dot(v, B[i, k:])
+            B[i,k:] =B[i,k:]-( 2*projection*v)
     return B
     
     
@@ -72,7 +73,7 @@ def full_qr(A, Q_accum, tol=1e-8):
             qr_iteration(A_deflated,Q_accum[ : ,:m_deflated])
             
             np.fill_diagonal(A_deflated,A_deflated.diagonal() + mu)
-            residuals.append(off_diag_size(A))
+            residuals.append(off_diag_size(A_deflated))
     return residuals
 
 

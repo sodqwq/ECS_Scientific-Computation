@@ -9,16 +9,10 @@ def right_multiply_Q(B, v_list):
     `Q` is represented implicitly by the list of Householder vectors `v_list`.
     """
     # TODO (Problem 2a): apply each Householder reflector in `v_list` to each *row* of `B`
-    """y = B.T
-    for k in range(len(v_list)):
-        y[k:] -= 2 * np.outer(v_list[k],v_list[k] @ y[k:])
-    B[:] = y.T"""
-    
     for i in range(B.shape[0]):
         for k in range(len(v_list)):
             v = v_list[k]
             B[i,k:] -= 2 *v * np.dot(v,B[i,k:])
-    
     return B
     
     
@@ -79,7 +73,6 @@ def full_qr(A, Q_accum, tol=1e-8):
             
             np.fill_diagonal(A_deflated,A_deflated.diagonal() + mu)
             residuals.append(off_diag_size(A))
-
     return residuals
 
 
